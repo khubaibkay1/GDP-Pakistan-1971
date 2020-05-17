@@ -1,0 +1,62 @@
+---
+title: "Pakistan GDP analysis"
+author: "Khubaib"
+date: "5/17/2020"
+output:
+  pdf_document: default
+  html_document: default
+---
+First we freaking import the libraries or whatever it is called
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(gapminder)
+# Load the data
+library(gapminder)
+```
+
+## One strange thing
+
+I was seeing some of this dataset and found something *strange*. Let me show you
+```{r}
+bangladesh <- subset(gapminder,country=="Bangladesh")
+ggplot(bangladesh,aes(x=year,y=pop)) + geom_point()
+```
+
+Do you see it? Bangladesh existed before 1970! That is clearly false. I think they seperated it. So time to bring it back to Pakistan to fix the analysis.
+
+```{r}
+Pakistan <- subset(gapminder,country == "Pakistan")
+Pakistan <- Pakistan %>% mutate(actualGDP= gdpPercap * pop)
+bangladesh<- bangladesh %>% mutate(actualGDP= gdpPercap * pop)
+```
+
+Now time to change the populations till 1971
+
+```{r}
+Pakistan[Pakistan$year<1972,"pop"] <-  Pakistan[Pakistan$year<1972,"pop"]+ bangladesh[bangladesh$year<1972,"pop"]
+Pakistan[Pakistan$year<1972,"actualGDP"] <-  Pakistan[Pakistan$year<1972,"actualGDP"]+ bangladesh[bangladesh$year<1972,"actualGDP"]
+
+```
+Now the data looks a bit neat.
+And how I want it
+
+## Plotting GDP
+Let's see the graph
+
+```{r pressure, echo=FALSE}
+ggplot(Pakistan,aes(x=year,y=actualGDP,color=gdpPercap)) + geom_line()
+```
+Now what we can see is that there was a major dip in GDP.
+```{r}
+
+ggplot(Pakistan,aes(x=year,y=actualGDP)) + geom_line() + lims(x=c(1967,1972),y=c(0,1.2e11))
+```
+That was due to war, hence War is bad. 
+The end of a stupid petty analysis
+Hopefully will lead to something better
+
+
+
+
+
